@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAPOR - Premium Vape Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="shared.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --primary: #f1f4ff;
+            --secondary: #9b6bff;
+            --tertiary: #2dd4bf;
+            --neutral: #090b14;
+            --text: #dfe6ff;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--neutral);
+            color: var(--text);
+        }
+        
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--tertiary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .product-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px) rotateX(5deg);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .cart-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--secondary), var(--tertiary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            background: var(--secondary);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .category-card {
+            background: rgba(255, 255, 255, 0.8);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .search-input {
+            background: rgba(255, 255, 255, 0.9);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            border-color: var(--secondary);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), #d4a574);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(184, 115, 51, 0.3);
+        }
+        
+        .quick-view-modal {
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            background: rgba(0, 0, 0, 0.8);
+        }
+        
+        .modal-content {
+            background: var(--neutral);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .hero-bg-slider {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            background: #0b1220;
+        }
+
+        .hero-bg-slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            opacity: 0;
+            filter: saturate(1.15) contrast(1.08);
+            transition: opacity 750ms ease;
+        }
+
+        .hero-bg-slide.is-active {
+            opacity: 0.8;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 50% 35%, rgba(15, 23, 42, 0.18), transparent 45%),
+                linear-gradient(180deg, rgba(11, 18, 32, 0.24) 0%, rgba(244, 247, 255, 0.54) 100%);
+        }
+
+        @media (max-width: 768px) {
+            .hero-bg-slide {
+                object-position: center center;
+            }
+        }
+
+        .hero-content-shell {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.42), rgba(15, 23, 42, 0.2));
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 1.25rem;
+            padding: 1.5rem 1rem;
+            box-shadow: 0 24px 40px -30px rgba(15, 23, 42, 0.95);
+        }
+
+        .hero-section .hero-title {
+            background: none;
+            -webkit-text-fill-color: #f8fafc;
+            color: #f8fafc;
+            text-shadow: 0 4px 22px rgba(15, 23, 42, 0.95);
+        }
+
+        .hero-subtitle {
+            color: rgba(241, 245, 249, 0.96);
+            text-shadow: 0 2px 12px rgba(15, 23, 42, 0.8);
+        }
+
+        .hero-btn-secondary {
+            border-color: rgba(248, 250, 252, 0.9);
+            color: #f8fafc;
+            background: rgba(15, 23, 42, 0.28);
+            box-shadow: 0 14px 26px -18px rgba(15, 23, 42, 0.9);
+        }
+
+        .hero-btn-secondary:hover {
+            background: rgba(248, 250, 252, 0.95);
+            color: #0f172a;
+            border-color: rgba(248, 250, 252, 1);
+        }
+
+        .strategic-gallery {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(244, 247, 255, 0.95));
+        }
+
+        .strategic-image {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            border: 1px solid rgba(124, 58, 237, 0.16);
+            box-shadow: 0 20px 32px -26px rgba(15, 23, 42, 0.8);
+        }
+
+        .strategic-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 400ms ease;
+        }
+
+        .strategic-image:hover img {
+            transform: scale(1.04);
+        }
+
+        .strategic-image .caption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 0.7rem 0.85rem;
+            font-size: 0.82rem;
+            color: #f8fafc;
+            background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.78));
+        }
+
+        .featured-scroll {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .featured-scroll::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Particles Background -->
+    <div id="particles-canvas"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 gap-3">
+                <div class="flex items-center space-x-3 sm:space-x-8 min-w-0">
+                    <div class="flex items-center space-x-2">
+                        <img src="resources/logo.png" alt="VAPOR" class="h-7 w-7 sm:h-8 sm:w-8">
+                        <span class="text-xl sm:text-2xl font-bold leading-none" style="color: var(--primary);">VAPOR</span>
+                    </div>
+                    <div class="hidden md:flex space-x-8">
+                        <a href="#" class="nav-link text-gray-700 hover:text-gray-900">Home</a>
+                        <a href="products.html" class="nav-link text-gray-700 hover:text-gray-900">Products</a>
+                        <a href="#categories" class="nav-link text-gray-700 hover:text-gray-900">Categories</a>
+                        <a href="#about" class="nav-link text-gray-700 hover:text-gray-900">About</a>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-2 sm:space-x-4 shrink-0">
+                    <div class="relative hidden sm:block">
+                        <input type="text" id="search-input" placeholder="Search products..." 
+                               aria-label="Search products"
+                               class="search-input w-44 md:w-56 lg:w-64 px-4 py-2 rounded-full text-sm focus:outline-none">
+                        <div id="search-suggestions" class="absolute top-full left-0 w-full bg-white rounded-lg shadow-lg mt-1 hidden z-10"></div>
+                    </div>
+                    <button
+                        id="mobile-menu-toggle"
+                        aria-label="Toggle navigation menu"
+                        aria-expanded="false"
+                        class="md:hidden p-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <button id="cart-toggle" aria-label="Open cart" class="relative p-2 text-gray-700 hover:text-gray-900 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9m-9 0V19a2 2 0 002 2h7a2 2 0 002-2v-4"></path>
+                        </svg>
+                        <span id="cart-count" class="cart-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="hidden fixed top-16 left-0 right-0 z-40 md:hidden bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-lg">
+        <div class="px-4 py-3 space-y-1">
+            <a href="index.html" class="block px-3 py-2 rounded-lg text-gray-900 font-semibold bg-gray-100">Home</a>
+            <a href="products.html" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Products</a>
+            <a href="#categories" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Categories</a>
+            <a href="#" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">About</a>
+        </div>
+    </div>
+
+    <!-- Cart Dropdown -->
+    <div id="cart-dropdown" class="fixed top-16 right-4 left-4 sm:left-auto sm:w-80 bg-white rounded-lg shadow-xl z-40 hidden">
+        <div class="p-4 border-b">
+            <h3 class="font-semibold text-lg">Shopping Cart</h3>
+        </div>
+        <div id="cart-items" class="max-h-64 overflow-y-auto p-4">
+            <p class="text-gray-500 text-center py-4">Your cart is empty</p>
+        </div>
+        <div class="p-4 border-t">
+            <div class="flex justify-between items-center mb-4">
+                <span class="font-semibold">Total:</span>
+                <span id="cart-total" class="font-bold text-lg" style="color: var(--secondary);">$0.00</span>
+            </div>
+            <a href="cart.html" class="btn-primary w-full text-white text-center py-2 rounded-lg block">View Cart</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section relative min-h-screen flex items-center justify-center overflow-hidden" style="background: linear-gradient(135deg, #f4f7ff 0%, #eef2ff 100%);">
+        <div class="hero-bg-slider" aria-hidden="true">
+            <img src="26cddc28ae7db4755d8933e9e809a022.jpg" alt="" class="hero-bg-slide is-active">
+            <img src="370ee18f92f7e53803998f0589e252da.jpg" alt="" class="hero-bg-slide">
+            <img src="880dcfc54bf9dea05b5c4c6fb05dcb5f.jpg" alt="" class="hero-bg-slide">
+            <img src="b52617683b3f90298cff727e7dcbe85a.jpg" alt="" class="hero-bg-slide">
+            <img src="2984c9179a54d480257d3f1f157ef67a.jpg" alt="" class="hero-bg-slide">
+        </div>
+        <div class="hero-overlay" aria-hidden="true"></div>
+        <div class="hero-content-shell relative z-10 text-center max-w-4xl mx-auto px-4">
+            <h1 class="hero-title text-4xl sm:text-6xl md:text-8xl mb-6 leading-tight">
+                Premium Vaping
+                <br>Experience
+            </h1>
+            <p class="hero-subtitle text-lg sm:text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
+                Discover the finest selection of vape devices, e-liquids, and accessories. 
+                Quality meets innovation in every product.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="products.html" class="btn-primary text-white px-8 py-4 rounded-full text-lg font-semibold inline-block">
+                    Shop Now
+                </a>
+                <button id="learn-more" class="hero-btn-secondary border-2 px-8 py-4 rounded-full text-lg font-semibold transition-all">
+                    Learn More
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 gradient-text">Featured Products</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Handpicked selection of our most popular and highest-rated products
+                </p>
+            </div>
+            
+            <div class="relative">
+                <div id="featured-products" class="featured-scroll flex gap-6 overflow-hidden pb-2">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section id="categories" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4" style="color: var(--primary);">Shop by Category</h2>
+                <p class="text-xl text-gray-600">Find exactly what you're looking for</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="category-card p-8 rounded-2xl text-center group cursor-pointer" onclick="filterByCategory('disposable')">
+                    <div class="text-6xl mb-4">💨</div>
+                    <h3 class="text-2xl font-semibold mb-2" style="color: var(--primary);">Disposable Vapes</h3>
+                    <p class="text-gray-600">Ready-to-use devices</p>
+                </div>
+                <div class="category-card p-8 rounded-2xl text-center group cursor-pointer" onclick="filterByCategory('kit')">
+                    <div class="text-6xl mb-4">🔋</div>
+                    <h3 class="text-2xl font-semibold mb-2" style="color: var(--primary);">Vape Kits</h3>
+                    <p class="text-gray-600">Complete starter sets</p>
+                </div>
+                <div class="category-card p-8 rounded-2xl text-center group cursor-pointer" onclick="filterByCategory('liquid')">
+                    <div class="text-6xl mb-4">🧪</div>
+                    <h3 class="text-2xl font-semibold mb-2" style="color: var(--primary);">E-Liquids</h3>
+                    <p class="text-gray-600">Premium flavors</p>
+                </div>
+                <div class="category-card p-8 rounded-2xl text-center group cursor-pointer" onclick="filterByCategory('accessory')">
+                    <div class="text-6xl mb-4">🔧</div>
+                    <h3 class="text-2xl font-semibold mb-2" style="color: var(--primary);">Accessories</h3>
+                    <p class="text-gray-600">Parts & tools</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="strategic-gallery py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="strategic-image h-64">
+                    <img src="IMG-20260325-WA0115-2.jpg" alt="Featured new vape" loading="lazy">
+                    <div class="caption">Nouveau drop Vaporesso</div>
+                </div>
+                <div class="strategic-image h-64">
+                    <img src="resources/product-10.jpg" alt="Premium e-liquid pack" loading="lazy">
+                    <div class="caption">Flavors premium les plus vendus</div>
+                </div>
+                <div class="strategic-image h-64">
+                    <img src="resources/product-3.jpg" alt="Geek Bar Pulse X" loading="lazy">
+                    <div class="caption">Performance et design futuriste</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-20 bg-gray-900 text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold mb-4">Stay Updated</h2>
+            <p class="text-xl mb-8 text-gray-300">
+                Get the latest product releases, exclusive offers, and vaping tips delivered to your inbox.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                <input type="email" placeholder="Enter your email" 
+                       class="newsletter-input flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                <button class="newsletter-subscribe-btn btn-primary px-6 py-3 rounded-lg font-semibold whitespace-nowrap">
+                    Subscribe
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <img src="resources/logo.png" alt="VAPOR" class="h-8 w-8">
+                        <span class="text-2xl font-bold">VAPOR</span>
+                    </div>
+                    <p class="text-gray-400 max-w-md">
+                        Your trusted source for premium vaping products. Quality, innovation, and customer satisfaction are our top priorities.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="products.html" class="hover:text-white transition-colors">Products</a></li>
+                        <li><a href="#categories" class="hover:text-white transition-colors">Categories</a></li>
+                        <li><a href="cart.html" class="hover:text-white transition-colors">Cart</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Shipping Info</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 VAPOR. All rights reserved. | Age Verification Required</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Quick View Modal -->
+    <div id="quick-view-modal" class="quick-view-modal fixed inset-0 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="modal-content max-w-4xl w-full p-8 relative">
+                <button id="close-modal" aria-label="Close modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+                <div id="modal-content">
+                    <!-- Modal content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - VAPOR Premium Vape Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="shared.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --primary: #f1f4ff;
+            --secondary: #9b6bff;
+            --tertiary: #2dd4bf;
+            --neutral: #090b14;
+            --text: #dfe6ff;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--neutral);
+            color: var(--text);
+        }
+        
+        .product-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px) rotateX(5deg);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .filter-sidebar {
+            background: rgba(255, 255, 255, 0.9);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .filter-section {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .price-range-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            outline: none;
+        }
+        
+        .price-range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--secondary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .filter-chip {
+            background: var(--secondary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 4px;
+        }
+        
+        .sort-dropdown {
+            background: rgba(255, 255, 255, 0.9);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .comparison-panel {
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .comparison-panel.active {
+            transform: translateY(0);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            background: var(--secondary);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .cart-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), #d4a574);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(184, 115, 51, 0.3);
+        }
+
+        @media (max-width: 640px) {
+            .product-card:hover {
+                transform: translateY(-4px);
+            }
+
+            .comparison-panel {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 gap-3">
+                <div class="flex items-center space-x-3 sm:space-x-8 min-w-0">
+                    <div class="flex items-center space-x-2">
+                        <img src="resources/logo.png" alt="VAPOR" class="h-7 w-7 sm:h-8 sm:w-8">
+                        <span class="text-xl sm:text-2xl font-bold leading-none" style="color: var(--primary);">VAPOR</span>
+                    </div>
+                    <div class="hidden md:flex space-x-8">
+                        <a href="index.html" class="nav-link text-gray-700 hover:text-gray-900">Home</a>
+                        <a href="#" class="nav-link text-gray-900 font-semibold">Products</a>
+                        <a href="index.html#categories" class="nav-link text-gray-700 hover:text-gray-900">Categories</a>
+                        <a href="#" class="nav-link text-gray-700 hover:text-gray-900">About</a>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-2 sm:space-x-4 shrink-0">
+                    <div class="relative hidden sm:block">
+                        <input type="text" id="search-input" placeholder="Search products..." 
+                               aria-label="Search products"
+                               class="w-44 md:w-56 lg:w-64 px-4 py-2 rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white/90 backdrop-blur-sm">
+                    </div>
+                    <button
+                        id="mobile-menu-toggle"
+                        aria-label="Toggle navigation menu"
+                        aria-expanded="false"
+                        class="md:hidden p-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <button id="cart-toggle" aria-label="Open cart" class="relative p-2 text-gray-700 hover:text-gray-900 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9m-9 0V19a2 2 0 002 2h7a2 2 0 002-2v-4"></path>
+                        </svg>
+                        <span id="cart-count" class="cart-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="hidden fixed top-16 left-0 right-0 z-40 md:hidden bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-lg">
+        <div class="px-4 py-3 space-y-1">
+            <a href="index.html" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Home</a>
+            <a href="products.html" class="block px-3 py-2 rounded-lg text-gray-900 font-semibold bg-gray-100">Products</a>
+            <a href="index.html#categories" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Categories</a>
+            <a href="#" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">About</a>
+        </div>
+    </div>
+
+    <!-- Cart Dropdown -->
+    <div id="cart-dropdown" class="fixed top-16 right-4 left-4 sm:left-auto sm:w-80 bg-white rounded-lg shadow-xl z-40 hidden">
+        <div class="p-4 border-b">
+            <h3 class="font-semibold text-lg">Shopping Cart</h3>
+        </div>
+        <div id="cart-items" class="max-h-64 overflow-y-auto p-4">
+            <p class="text-gray-500 text-center py-4">Your cart is empty</p>
+        </div>
+        <div class="p-4 border-t">
+            <div class="flex justify-between items-center mb-4">
+                <span class="font-semibold">Total:</span>
+                <span id="cart-total" class="font-bold text-lg" style="color: var(--secondary);">$0.00</span>
+            </div>
+            <a href="cart.html" class="btn-primary w-full text-white text-center py-2 rounded-lg block">View Cart</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="pt-16 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold mb-2" style="color: var(--primary);">All Products</h1>
+                <p class="text-gray-600">Discover our complete collection of premium vaping products</p>
+            </div>
+
+            <div class="mb-6 sm:hidden">
+                <input
+                    type="text"
+                    id="search-input-mobile"
+                    placeholder="Search products..."
+                    aria-label="Search products"
+                    class="w-full px-4 py-2 rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white/90 backdrop-blur-sm"
+                >
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Filter Sidebar -->
+                <div class="lg:w-1/4">
+                    <div class="filter-sidebar rounded-lg p-4 sm:p-6 lg:sticky lg:top-24">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-semibold">Filters</h2>
+                            <button id="clear-filters" class="text-sm text-gray-500 hover:text-gray-700">Clear All</button>
+                        </div>
+
+                        <!-- Active Filters -->
+                        <div id="active-filters" class="mb-6">
+                            <!-- Active filter chips will appear here -->
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div class="filter-section py-4">
+                            <h3 class="font-semibold mb-3">Category</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="category-filter mr-2" value="disposable">
+                                    <span>Disposable Vapes</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="category-filter mr-2" value="kit">
+                                    <span>Vape Kits</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="category-filter mr-2" value="liquid">
+                                    <span>E-Liquids</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="category-filter mr-2" value="accessory">
+                                    <span>Accessories</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Brand Filter -->
+                        <div class="filter-section py-4">
+                            <h3 class="font-semibold mb-3">Brand</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="brand-filter mr-2" value="Elf Bar">
+                                    <span>Elf Bar</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="brand-filter mr-2" value="Lost Mary">
+                                    <span>Lost Mary</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="brand-filter mr-2" value="Geek Bar">
+                                    <span>Geek Bar</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="brand-filter mr-2" value="Vaporesso">
+                                    <span>Vaporesso</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="brand-filter mr-2" value="VooPoo">
+                                    <span>VooPoo</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="filter-section py-4">
+                            <h3 class="font-semibold mb-3">Price Range</h3>
+                            <div class="px-2">
+                                <input type="range" id="price-range" class="price-range-slider w-full" 
+                                       aria-label="Maximum price"
+                                       min="0" max="100" value="100">
+                                <div class="flex justify-between text-sm text-gray-600 mt-2">
+                                    <span>$0</span>
+                                    <span id="price-value">$100+</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nicotine Strength -->
+                        <div class="filter-section py-4">
+                            <h3 class="font-semibold mb-3">Nicotine Strength</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="nicotine-filter mr-2" value="0mg">
+                                    <span>0mg (Nicotine Free)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="nicotine-filter mr-2" value="3mg">
+                                    <span>3mg</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="nicotine-filter mr-2" value="6mg">
+                                    <span>6mg</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="nicotine-filter mr-2" value="12mg">
+                                    <span>12mg</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="nicotine-filter mr-2" value="20mg">
+                                    <span>20mg (Nic Salts)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="lg:w-3/4">
+                    <!-- Sort and View Options -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3 sm:gap-4">
+                        <div class="flex items-center gap-2 sm:gap-4 flex-wrap">
+                            <span class="text-gray-600">Sort by:</span>
+                            <select id="sort-select" aria-label="Sort products" class="sort-dropdown w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                                <option value="name">Name</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="popular">Most Popular</option>
+                                <option value="newest">Newest</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-start">
+                            <span id="results-count" class="text-gray-600">24 products</span>
+                            <button id="compare-toggle" class="text-sm text-gray-500 hover:text-gray-700 border px-3 py-1 rounded">
+                                Compare (<span id="compare-count">0</span>)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Products will be loaded here -->
+                    </div>
+
+                    <!-- Load More Button -->
+                    <div class="text-center mt-12">
+                        <button id="load-more" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold">
+                            Load More Products
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison Panel -->
+    <div id="comparison-panel" class="comparison-panel fixed bottom-0 left-0 right-0 z-40 p-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Compare Products</h3>
+                <button id="close-comparison" aria-label="Close comparison panel" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="comparison-items" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Comparison items will be loaded here -->
+            </div>
+            <div class="text-center mt-4">
+                <button id="compare-details" class="btn-primary text-white px-6 py-2 rounded-lg">
+                    View Detailed Comparison
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <img src="resources/logo.png" alt="VAPOR" class="h-8 w-8">
+                        <span class="text-2xl font-bold">VAPOR</span>
+                    </div>
+                    <p class="text-gray-400 max-w-md">
+                        Your trusted source for premium vaping products. Quality, innovation, and customer satisfaction are our top priorities.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="index.html" class="hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Products</a></li>
+                        <li><a href="cart.html" class="hover:text-white transition-colors">Cart</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Shipping Info</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 VAPOR. All rights reserved. | Age Verification Required</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="products.js"></script>
+</body>
+</html>
