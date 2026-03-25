@@ -38,20 +38,23 @@ function renderCart(cart, shared) {
         const wrap = document.createElement('div');
         wrap.className = 'cart-item p-4 rounded-lg bg-white';
         wrap.innerHTML = `
-            <div class="flex items-center gap-4">
-                <img class="w-20 h-20 object-cover rounded-lg" src="${item.image}" alt="${item.name}">
-                <div class="flex-1">
-                    <h3 class="font-semibold text-lg mb-1" style="color: var(--primary);">${item.name}</h3>
-                    <p class="text-sm text-gray-600 mb-2">${item.brand}</p>
-                    <div class="flex items-center gap-2">
-                        <button class="quantity-btn decrease-btn">-</button>
-                        <input type="number" class="quantity-input" min="1" max="10" value="${item.quantity}">
-                        <button class="quantity-btn increase-btn">+</button>
-                        <button class="remove-item text-red-500 hover:text-red-700 text-sm ml-4">Remove</button>
+            <div class="flex items-start gap-3 sm:gap-4">
+                <img class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg" src="${item.image}" alt="${item.name}">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <h3 class="font-semibold text-base sm:text-lg mb-1 truncate" style="color: var(--primary);">${item.name}</h3>
+                            <p class="text-sm text-gray-600 mb-2">${item.brand}</p>
+                        </div>
+                        <div class="font-bold text-base sm:text-lg whitespace-nowrap" style="color: var(--secondary);">$${(item.price * item.quantity).toFixed(2)}</div>
                     </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-lg" style="color: var(--secondary);">$${(item.price * item.quantity).toFixed(2)}</div>
+
+                    <div class="mt-2 flex items-center gap-2 flex-wrap">
+                        <button class="quantity-btn decrease-btn" aria-label="Decrease quantity">-</button>
+                        <input type="number" class="quantity-input" min="1" max="10" value="${item.quantity}" aria-label="Quantity">
+                        <button class="quantity-btn increase-btn" aria-label="Increase quantity">+</button>
+                        <button class="remove-item text-red-500 hover:text-red-700 text-sm ml-1 sm:ml-3">Remove</button>
+                    </div>
                 </div>
             </div>
         `;

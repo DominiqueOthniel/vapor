@@ -674,6 +674,57 @@ window.VaporShared = (() => {
                 color: #5a3718 !important;
                 border-color: rgba(161, 113, 59, 0.62) !important;
             }
+
+            /* Final white-gold contrast fixes (override previous dark rules) */
+            .cart-item h3,
+            .cart-item p,
+            .cart-item .text-sm,
+            .cart-item .text-xs,
+            .cart-item span,
+            .cart-item label {
+                color: #1f2937 !important;
+            }
+
+            .cart-item [style*='var(--secondary)'] {
+                color: #b87333 !important;
+            }
+
+            .order-summary,
+            .order-summary *,
+            #payment-methods .payment-method,
+            #card-payment-panel,
+            #paypal-payment-panel,
+            #payment-mode-label {
+                color: #1f2937 !important;
+            }
+
+            .order-summary h2,
+            .order-summary h3,
+            .order-summary label,
+            .order-summary span,
+            .order-summary p {
+                color: #1f2937 !important;
+            }
+
+            .order-summary .text-green-600,
+            .order-summary .text-green-500 {
+                color: #15803d !important;
+            }
+
+            #payment-methods .payment-method.active {
+                color: #4a2e18 !important;
+            }
+
+            .payment-note,
+            #payment-mode-label {
+                color: #4b5563 !important;
+            }
+
+            #recommended-products .product-card h3,
+            #recommended-products .product-card p,
+            #recommended-products .product-card span {
+                color: #1f2937 !important;
+            }
         `;
 
         document.head.appendChild(style);
@@ -953,9 +1004,12 @@ window.VaporShared = (() => {
         if (!scope || !('querySelectorAll' in scope)) return;
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-        const jellyTargets = scope.querySelectorAll(
-            '.btn-primary, .btn-secondary, .quick-view-btn, .add-to-cart-btn, .add-btn, .category-card, .product-card, #mobile-menu a'
-        );
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        const selector = isMobile
+            ? '.btn-primary, .btn-secondary, .quick-view-btn, .add-to-cart-btn, .add-btn, #mobile-menu a'
+            : '.btn-primary, .btn-secondary, .quick-view-btn, .add-to-cart-btn, .add-btn, .category-card, .product-card, #mobile-menu a';
+
+        const jellyTargets = scope.querySelectorAll(selector);
 
         jellyTargets.forEach((element) => {
             if (element.dataset.jellyReady === 'true') return;
