@@ -506,6 +506,174 @@ window.VaporShared = (() => {
                 66% { transform: translate3d(-1px, 1px, 0) rotate(-0.8deg); }
                 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
             }
+
+            /* White-gold theme overrides */
+            :root {
+                --primary: #1a1a1a !important;
+                --secondary: #b87333 !important;
+                --tertiary: #9caf88 !important;
+                --neutral: #fafafa !important;
+                --text: #2d2d2d !important;
+            }
+
+            body {
+                color: #2d2d2d !important;
+                background:
+                    radial-gradient(circle at 8% -12%, rgba(184, 115, 51, 0.18), transparent 34%),
+                    radial-gradient(circle at 92% 0%, rgba(156, 175, 136, 0.15), transparent 36%),
+                    #fafafa !important;
+            }
+
+            nav {
+                background: rgba(255, 255, 255, 0.92) !important;
+                border-color: rgba(184, 115, 51, 0.2) !important;
+            }
+
+            .bg-white,
+            section.bg-white {
+                background: #ffffff !important;
+                color: #2d2d2d !important;
+            }
+
+            .bg-gray-50,
+            section.bg-gray-50 {
+                background: #f7f7f7 !important;
+                color: #2d2d2d !important;
+            }
+
+            #mobile-menu,
+            #cart-dropdown,
+            .order-summary,
+            .filter-sidebar,
+            .comparison-panel,
+            .modal-content {
+                background: rgba(255, 255, 255, 0.95) !important;
+                color: #2d2d2d !important;
+                border-color: rgba(184, 115, 51, 0.22) !important;
+            }
+
+            .product-card,
+            .category-card,
+            .filter-sidebar,
+            .order-summary,
+            .modal-content,
+            .cart-item {
+                background: #ffffff !important;
+                color: #2d2d2d !important;
+                border-color: rgba(184, 115, 51, 0.2) !important;
+                box-shadow: 0 20px 36px -30px rgba(0, 0, 0, 0.28) !important;
+            }
+
+            .text-gray-900 { color: #111827 !important; }
+            .text-gray-800 { color: #1f2937 !important; }
+            .text-gray-700 { color: #374151 !important; }
+            .text-gray-600 { color: #4b5563 !important; }
+            .text-gray-500 { color: #6b7280 !important; }
+            .text-gray-400 { color: #9ca3af !important; }
+
+            .category-card {
+                --primary: #1a1a1a !important;
+                background: linear-gradient(155deg, #ffffff, #f6f7fb) !important;
+            }
+
+            .category-card h3,
+            .category-card p {
+                color: #1f2937 !important;
+            }
+
+            .product-card .quick-view-btn {
+                background: #eef1f7 !important;
+                color: #111827 !important;
+                border: 1px solid #d9e0ef !important;
+            }
+
+            .product-card .quick-view-btn:hover {
+                background: #e3e8f4 !important;
+                color: #0f172a !important;
+            }
+
+            .quantity-btn {
+                background: #ffffff !important;
+                color: #111827 !important;
+                border-color: #ddd !important;
+            }
+
+            .quantity-btn:hover {
+                background: #f5e6d8 !important;
+                color: #4a2e18 !important;
+                border-color: #b87333 !important;
+            }
+
+            .quantity-input,
+            .payment-input,
+            input,
+            textarea,
+            select,
+            .newsletter-input {
+                background: #ffffff !important;
+                color: #111827 !important;
+                border-color: rgba(120, 120, 120, 0.35) !important;
+            }
+
+            .newsletter-input::placeholder,
+            input::placeholder,
+            textarea::placeholder {
+                color: #6b7280 !important;
+            }
+
+            .payment-method {
+                background: #ffffff !important;
+                color: #1f2937 !important;
+                border: 1px solid #d4d9e6 !important;
+            }
+
+            .payment-method.active {
+                background: linear-gradient(135deg, rgba(184, 115, 51, 0.24), rgba(212, 165, 116, 0.24)) !important;
+                color: #3f2a17 !important;
+                border-color: rgba(184, 115, 51, 0.6) !important;
+            }
+
+            .payment-note,
+            .remove-item {
+                color: #6b7280 !important;
+            }
+
+            .btn-primary,
+            .newsletter-subscribe-btn,
+            #checkout-now,
+            #compare-details {
+                background: linear-gradient(135deg, #a66a2e 0%, #c78a4a 45%, #e7c08a 100%) !important;
+                color: #fffaf2 !important;
+                border: 1px solid rgba(122, 74, 33, 0.38) !important;
+                text-shadow: 0 1px 6px rgba(74, 42, 16, 0.45);
+                box-shadow: 0 16px 28px -18px rgba(151, 97, 42, 0.6) !important;
+            }
+
+            .btn-primary:hover,
+            .newsletter-subscribe-btn:hover,
+            #checkout-now:hover,
+            #compare-details:hover {
+                background: linear-gradient(135deg, #b67533 0%, #d59a57 48%, #efc891 100%) !important;
+                border-color: rgba(122, 74, 33, 0.55) !important;
+                box-shadow: 0 18px 32px -18px rgba(151, 97, 42, 0.72) !important;
+            }
+
+            .btn-secondary,
+            #apply-promo,
+            #reserve-items {
+                background: linear-gradient(135deg, #fff8ee 0%, #f5eadc 100%) !important;
+                color: #6a441f !important;
+                border: 1px solid rgba(184, 133, 74, 0.46) !important;
+                box-shadow: 0 10px 20px -18px rgba(122, 74, 33, 0.45) !important;
+            }
+
+            .btn-secondary:hover,
+            #apply-promo:hover,
+            #reserve-items:hover {
+                background: linear-gradient(135deg, #f7ecd9 0%, #eddcc4 100%) !important;
+                color: #5a3718 !important;
+                border-color: rgba(161, 113, 59, 0.62) !important;
+            }
         `;
 
         document.head.appendChild(style);
