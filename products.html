@@ -162,7 +162,7 @@
                         <a href="index.html" class="nav-link text-gray-700 hover:text-gray-900">Home</a>
                         <a href="#" class="nav-link text-gray-900 font-semibold">Products</a>
                         <a href="index.html#categories" class="nav-link text-gray-700 hover:text-gray-900">Categories</a>
-                        <a href="#" class="nav-link text-gray-700 hover:text-gray-900">About</a>
+                        <a href="about.html" class="nav-link text-gray-700 hover:text-gray-900">About</a>
                     </div>
                 </div>
                 
@@ -198,7 +198,7 @@
             <a href="index.html" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Home</a>
             <a href="products.html" class="block px-3 py-2 rounded-lg text-gray-900 font-semibold bg-gray-100">Products</a>
             <a href="index.html#categories" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Categories</a>
-            <a href="#" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">About</a>
+            <a href="about.html" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">About</a>
         </div>
     </div>
 
@@ -272,6 +272,10 @@
                                     <input type="checkbox" class="category-filter mr-2" value="accessory">
                                     <span>Accessories</span>
                                 </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="category-filter mr-2" value="vapsolo">
+                                    <span>VapSolo</span>
+                                </label>
                             </div>
                         </div>
 
@@ -298,6 +302,10 @@
                                 <label class="flex items-center">
                                     <input type="checkbox" class="brand-filter mr-2" value="VooPoo">
                                     <span>VooPoo</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="brand-filter mr-2" value="VapSolo">
+                                    <span>VapSolo</span>
                                 </label>
                             </div>
                         </div>
@@ -401,6 +409,20 @@
                 <button id="compare-details" class="btn-primary text-white px-6 py-2 rounded-lg">
                     View Detailed Comparison
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Quick View Modal -->
+    <div id="quick-view-modal" class="fixed inset-0 z-50 hidden bg-black/60 p-4 sm:p-6">
+        <div class="min-h-full flex items-center justify-center">
+            <div class="modal-content w-full max-w-4xl rounded-2xl p-5 sm:p-8 relative max-h-[90vh] overflow-y-auto">
+                <button id="close-modal" aria-label="Close modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+                <div id="modal-content"></div>
             </div>
         </div>
     </div>

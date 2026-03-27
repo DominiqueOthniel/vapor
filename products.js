@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     shared.updateCartNavUI(cart);
     shared.setupCartDropdown();
     shared.setupMobileNav();
+    setupQuickViewModal();
     setupControls(products, cart, shared);
     seedFiltersFromUrl();
     renderProducts(products, cart, shared);
@@ -26,6 +27,17 @@ document.addEventListener('DOMContentLoaded', () => {
     shared.setupHoverAnimations();
     shared.setupJellyAnimations();
 });
+
+function setupQuickViewModal() {
+    const modal = document.getElementById('quick-view-modal');
+    const closeButton = document.getElementById('close-modal');
+    if (!modal || !closeButton) return;
+
+    closeButton.addEventListener('click', () => modal.classList.add('hidden'));
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) modal.classList.add('hidden');
+    });
+}
 
 function setupControls(products, cart, shared) {
     const searchInputs = Array.from(document.querySelectorAll('#search-input, #search-input-mobile'));
@@ -159,11 +171,21 @@ function renderProducts(products, cart, shared) {
     const filtered = sortProducts(applyFilters(products));
     grid.innerHTML = '';
     filtered.forEach((product) => {
+        const imagePath = String(product.image || '').toLowerCase();
+        const brandName = String(product.brand || '').toLowerCase();
+        const isSoloVapeAsset = brandName.includes('solovape')
+            || brandName.includes('vapsolo')
+            || imagePath.includes('solovape/')
+            || imagePath.includes('solov/');
+        const imageClass = isSoloVapeAsset
+            ? 'w-full h-56 sm:h-52 md:h-48 object-contain object-center bg-gray-100 p-2'
+            : 'w-full h-56 sm:h-52 md:h-48 object-cover object-center';
+
         const card = document.createElement('div');
         card.className = 'product-card bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300';
         card.innerHTML = `
             <div class="relative">
-                <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
+                <img src="${product.image}" alt="${product.name}" class="${imageClass}">
                 ${product.new ? '<span class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">New</span>' : ''}
                 <button class="compare-btn absolute top-2 right-2 bg-white/90 p-2 rounded-full shadow-md hover:bg-white transition-colors">+</button>
             </div>
@@ -175,9 +197,14 @@ function renderProducts(products, cart, shared) {
                     <span class="text-xl font-bold" style="color: var(--secondary);">$${product.price.toFixed(2)}</span>
                     ${product.puffs ? `<span class="text-sm text-gray-500">${product.puffs} puffs</span>` : ''}
                 </div>
-                <button class="add-btn w-full btn-primary text-white py-2 px-4 rounded-lg ${product.inStock ? '' : 'opacity-60 cursor-not-allowed'}" ${product.inStock ? '' : 'disabled'}>
-                    ${product.inStock ? 'Add to Cart' : 'Out of Stock'}
-                </button>
+                <div class="flex gap-2">
+                    <button class="quick-view-btn flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                        View Details
+                    </button>
+                    <button class="add-btn flex-1 btn-primary text-white py-2 px-4 rounded-lg ${product.inStock ? '' : 'opacity-60 cursor-not-allowed'}" ${product.inStock ? '' : 'disabled'}>
+                        ${product.inStock ? 'Add to Cart' : 'Out of Stock'}
+                    </button>
+                </div>
             </div>
         `;
 
@@ -194,6 +221,10 @@ function renderProducts(products, cart, shared) {
         if (compareBtn) {
             compareBtn.addEventListener('click', () => toggleComparison(product, shared));
         }
+        const quickViewBtn = card.querySelector('.quick-view-btn');
+        if (quickViewBtn) {
+            quickViewBtn.addEventListener('click', () => openQuickView(product, cart, shared));
+        }
         grid.appendChild(card);
     });
 
@@ -202,6 +233,72 @@ function renderProducts(products, cart, shared) {
     shared.setupHoverAnimations(grid);
     shared.setupScrollAnimations(grid);
     shared.setupJellyAnimations(grid);
+}
+
+function openQuickView(product, cart, shared) {
+    const modal = document.getElementById('quick-view-modal');
+    const content = document.getElementById('modal-content');
+    if (!modal || !content) return;
+
+    const features = Array.isArray(product.features) ? product.features : [];
+
+    content.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <div class="bg-gray-50 rounded-xl p-3 sm:p-4">
+                <img src="${product.image}" alt="${product.name}" class="w-full h-72 sm:h-96 object-contain rounded-lg">
+            </div>
+            <div>
+                <div class="flex items-start justify-between gap-3 mb-2">
+                    <h2 class="text-2xl sm:text-3xl font-bold" style="color: var(--primary);">${product.name}</h2>
+                    ${product.new ? '<span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full shrink-0">New</span>' : ''}
+                </div>
+                <p class="text-gray-600 mb-4">${product.brand}</p>
+                <p class="text-gray-700 mb-5">${product.description || 'No description available for this product yet.'}</p>
+
+                <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-gray-500">Price</p>
+                        <p class="font-bold text-lg" style="color: var(--secondary);">$${product.price.toFixed(2)}</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-gray-500">Puffs</p>
+                        <p class="font-semibold text-gray-900">${product.puffs ? `${product.puffs}` : 'N/A'}</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-gray-500">Nicotine</p>
+                        <p class="font-semibold text-gray-900">${product.nicotine || 'N/A'}</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-gray-500">Availability</p>
+                        <p class="font-semibold ${product.inStock ? 'text-green-600' : 'text-red-600'}">${product.inStock ? 'In Stock' : 'Out of Stock'}</p>
+                    </div>
+                </div>
+
+                ${features.length ? `
+                <div class="mb-6">
+                    <h3 class="font-semibold text-gray-900 mb-2">Key Features</h3>
+                    <ul class="list-disc list-inside text-gray-600 space-y-1">
+                        ${features.map((feature) => `<li>${feature}</li>`).join('')}
+                    </ul>
+                </div>` : ''}
+
+                <button id="modal-add-to-cart" class="btn-primary text-white py-3 px-6 rounded-lg font-semibold w-full ${product.inStock ? '' : 'opacity-60 cursor-not-allowed'}" ${product.inStock ? '' : 'disabled'}>
+                    ${product.inStock ? 'Add to Cart' : 'Out of Stock'}
+                </button>
+            </div>
+        </div>
+    `;
+
+    const btn = document.getElementById('modal-add-to-cart');
+    if (btn && product.inStock) {
+        btn.addEventListener('click', () => {
+            shared.addToCart(cart, product, 1);
+            shared.showNotification(`${product.name} added to cart!`, 'success');
+            modal.classList.add('hidden');
+        });
+    }
+
+    modal.classList.remove('hidden');
 }
 
 function toggleComparison(product, shared) {
