@@ -65,26 +65,24 @@ function createCard(product, cart, shared) {
     card.style.flex = '0 0 300px';
     card.style.width = '300px';
     card.innerHTML = `
-        <div class="relative">
-            <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
+        <div class="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
+            <img src="${product.image}" alt="${product.name}" class="absolute inset-0 h-full w-full object-cover object-[center_32%]" loading="lazy" decoding="async">
             ${product.new ? '<span class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">New</span>' : ''}
         </div>
-        <div class="p-4">
-            <div class="flex justify-between items-start mb-2">
-                <h3 class="font-semibold text-lg text-gray-900">${product.name}</h3>
-                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">In Stock</span>
+        <div class="p-4 min-w-0">
+            <div class="flex justify-between items-start mb-2 gap-2 min-w-0">
+                <h3 class="font-semibold text-base text-gray-900 line-clamp-2 min-w-0 flex-1 break-words">${product.name}</h3>
+                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full shrink-0">In Stock</span>
             </div>
-            <p class="text-gray-600 text-sm mb-2">${product.brand}</p>
-            <p class="text-gray-700 text-sm mb-3 line-clamp-2">${product.description}</p>
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <span class="text-xl font-bold" style="color: var(--secondary);">$${product.price.toFixed(2)}</span>
-                    ${product.originalPrice ? `<span class="text-gray-400 line-through text-sm ml-2">$${product.originalPrice.toFixed(2)}</span>` : ''}
-                </div>
+            <p class="text-gray-600 text-sm mb-2 truncate">${product.brand}</p>
+            <p class="text-gray-700 text-sm mb-3 line-clamp-2 break-words">${product.description}</p>
+            <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1 mb-4 min-w-0">
+                <span class="text-lg font-bold tabular-nums" style="color: var(--secondary);">$${product.price.toFixed(2)}</span>
+                ${product.originalPrice ? `<span class="text-gray-400 line-through text-sm">$${product.originalPrice.toFixed(2)}</span>` : ''}
             </div>
-            <div class="flex gap-2">
-                <button class="quick-view-btn flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">Quick View</button>
-                <button class="add-to-cart-btn flex-1 btn-primary text-white py-2 px-4 rounded-lg">Add to Cart</button>
+            <div class="flex flex-col sm:flex-row gap-2 min-w-0">
+                <button type="button" class="quick-view-btn w-full sm:flex-1 min-w-0 bg-gray-100 text-gray-700 py-2 px-3 text-sm rounded-lg hover:bg-gray-200 transition-colors">Quick View</button>
+                <button type="button" class="add-to-cart-btn w-full sm:flex-1 min-w-0 btn-primary text-white py-2 px-3 text-sm rounded-lg">Add to Cart</button>
             </div>
         </div>
     `;

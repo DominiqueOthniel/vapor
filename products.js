@@ -171,37 +171,30 @@ function renderProducts(products, cart, shared) {
     const filtered = sortProducts(applyFilters(products));
     grid.innerHTML = '';
     filtered.forEach((product) => {
-        const imagePath = String(product.image || '').toLowerCase();
-        const brandName = String(product.brand || '').toLowerCase();
-        const isSoloVapeAsset = brandName.includes('solovape')
-            || brandName.includes('vapsolo')
-            || imagePath.includes('solovape/')
-            || imagePath.includes('solov/');
-        const imageClass = isSoloVapeAsset
-            ? 'w-full h-56 sm:h-52 md:h-48 object-contain object-center bg-gray-100 p-2'
-            : 'w-full h-56 sm:h-52 md:h-48 object-cover object-center';
+        // Full-bleed thumb: cover + focal point slightly above center (typical packshots)
+        const imageClass = 'absolute inset-0 h-full w-full object-cover object-[center_32%]';
 
         const card = document.createElement('div');
-        card.className = 'product-card bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300';
+        card.className = 'product-card bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 min-w-0 max-w-full flex flex-col h-full';
         card.innerHTML = `
-            <div class="relative">
-                <img src="${product.image}" alt="${product.name}" class="${imageClass}">
+            <div class="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-gray-100">
+                <img src="${product.image}" alt="${product.name}" class="${imageClass}" loading="lazy" decoding="async">
                 ${product.new ? '<span class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">New</span>' : ''}
-                <button class="compare-btn absolute top-2 right-2 bg-white/90 p-2 rounded-full shadow-md hover:bg-white transition-colors">+</button>
+                <button type="button" class="compare-btn absolute top-2 right-2 bg-white/90 p-2 rounded-full shadow-md hover:bg-white transition-colors shrink-0" aria-label="Add to compare">+</button>
             </div>
-            <div class="p-4">
-                <h3 class="font-semibold text-lg text-gray-900">${product.name}</h3>
-                <p class="text-gray-600 text-sm mb-2">${product.brand}</p>
-                <p class="text-gray-700 text-sm mb-3 line-clamp-2">${product.description}</p>
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-xl font-bold" style="color: var(--secondary);">$${product.price.toFixed(2)}</span>
-                    ${product.puffs ? `<span class="text-sm text-gray-500">${product.puffs} puffs</span>` : ''}
+            <div class="p-3 sm:p-4 min-w-0 flex flex-col flex-1">
+                <h3 class="font-semibold text-base sm:text-lg text-gray-900 line-clamp-2 break-words min-w-0">${product.name}</h3>
+                <p class="text-gray-600 text-sm mb-2 truncate min-w-0">${product.brand}</p>
+                <p class="text-gray-700 text-sm mb-3 line-clamp-2 min-w-0 break-words">${product.description}</p>
+                <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 mb-4 min-w-0">
+                    <span class="text-lg sm:text-xl font-bold tabular-nums shrink-0" style="color: var(--secondary);">$${product.price.toFixed(2)}</span>
+                    ${product.puffs ? `<span class="text-xs sm:text-sm text-gray-500 whitespace-nowrap">${product.puffs} puffs</span>` : ''}
                 </div>
-                <div class="flex gap-2">
-                    <button class="quick-view-btn flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                <div class="flex flex-col sm:flex-row gap-2 mt-auto min-w-0">
+                    <button type="button" class="quick-view-btn w-full sm:flex-1 min-w-0 bg-gray-100 text-gray-700 py-2.5 px-3 sm:px-4 rounded-lg hover:bg-gray-200 transition-colors text-sm text-center">
                         View Details
                     </button>
-                    <button class="add-btn flex-1 btn-primary text-white py-2 px-4 rounded-lg ${product.inStock ? '' : 'opacity-60 cursor-not-allowed'}" ${product.inStock ? '' : 'disabled'}>
+                    <button type="button" class="add-btn w-full sm:flex-1 min-w-0 btn-primary text-white py-2.5 px-3 sm:px-4 rounded-lg text-sm text-center ${product.inStock ? '' : 'opacity-60 cursor-not-allowed'}" ${product.inStock ? '' : 'disabled'}>
                         ${product.inStock ? 'Add to Cart' : 'Out of Stock'}
                     </button>
                 </div>
@@ -243,17 +236,17 @@ function openQuickView(product, cart, shared) {
     const features = Array.isArray(product.features) ? product.features : [];
 
     content.innerHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            <div class="bg-gray-50 rounded-xl p-3 sm:p-4">
-                <img src="${product.image}" alt="${product.name}" class="w-full h-72 sm:h-96 object-contain rounded-lg">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 min-w-0">
+            <div class="bg-gray-50 rounded-xl p-3 sm:p-4 min-w-0 overflow-hidden">
+                <img src="${product.image}" alt="${product.name}" class="w-full max-w-full h-72 sm:h-96 object-cover object-[center_32%] rounded-lg bg-gray-100">
             </div>
-            <div>
-                <div class="flex items-start justify-between gap-3 mb-2">
-                    <h2 class="text-2xl sm:text-3xl font-bold" style="color: var(--primary);">${product.name}</h2>
+            <div class="min-w-0">
+                <div class="flex items-start justify-between gap-3 mb-2 min-w-0">
+                    <h2 class="text-xl sm:text-2xl md:text-3xl font-bold break-words min-w-0 pr-2" style="color: var(--primary);">${product.name}</h2>
                     ${product.new ? '<span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full shrink-0">New</span>' : ''}
                 </div>
-                <p class="text-gray-600 mb-4">${product.brand}</p>
-                <p class="text-gray-700 mb-5">${product.description || 'No description available for this product yet.'}</p>
+                <p class="text-gray-600 mb-4 break-words">${product.brand}</p>
+                <p class="text-gray-700 mb-5 break-words">${product.description || 'No description available for this product yet.'}</p>
 
                 <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
                     <div class="rounded-lg bg-gray-50 p-3">
@@ -326,11 +319,11 @@ function renderComparison() {
         const el = document.createElement('div');
         el.className = 'bg-white p-4 rounded-lg shadow';
         el.innerHTML = `
-            <div class="flex items-center gap-3">
-                <img src="${product.image}" alt="${product.name}" class="w-12 h-12 object-cover rounded">
-                <div class="flex-1">
-                    <h4 class="font-medium text-sm">${product.name}</h4>
-                    <p class="text-xs text-gray-500">$${product.price.toFixed(2)}</p>
+            <div class="flex items-center gap-3 min-w-0">
+                <img src="${product.image}" alt="" class="w-12 h-12 shrink-0 object-cover rounded">
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-medium text-sm line-clamp-2 break-words">${product.name}</h4>
+                    <p class="text-xs text-gray-500 tabular-nums">$${product.price.toFixed(2)}</p>
                 </div>
             </div>
         `;
