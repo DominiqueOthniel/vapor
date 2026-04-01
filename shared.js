@@ -1042,6 +1042,188 @@ window.VaporShared = (() => {
         });
     }
 
+    const AGE_STORAGE_KEY = 'vapor_age_verified_v1';
+
+    function setupAgeVerification() {
+        let verified = false;
+        try {
+            verified = localStorage.getItem(AGE_STORAGE_KEY) === '1';
+        } catch {
+            verified = false;
+        }
+        if (verified) return;
+
+        const run = () => {
+            if (document.getElementById('vapor-age-gate')) return;
+
+            const style = document.createElement('style');
+            style.id = 'vapor-age-gate-styles';
+            style.textContent = `
+                #vapor-age-gate {
+                    position: fixed;
+                    inset: 0;
+                    z-index: 2147483646;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+                    box-sizing: border-box;
+                }
+                #vapor-age-gate .vapor-age-gate__backdrop {
+                    position: absolute;
+                    inset: 0;
+                    background: rgba(6, 8, 14, 0.88);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                }
+                #vapor-age-gate .vapor-age-gate__card {
+                    position: relative;
+                    width: 100%;
+                    max-width: 420px;
+                    border-radius: 18px;
+                    padding: 1.75rem 1.5rem 1.5rem;
+                    background: linear-gradient(165deg, rgba(18, 22, 36, 0.98), rgba(10, 12, 22, 0.99));
+                    border: 1px solid rgba(184, 115, 51, 0.35);
+                    box-shadow:
+                        0 28px 64px rgba(0, 0, 0, 0.55),
+                        0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+                    color: #eef2ff;
+                    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+                }
+                #vapor-age-gate .vapor-age-gate__logo {
+                    width: 52px;
+                    height: 52px;
+                    object-fit: contain;
+                    margin: 0 auto 1rem;
+                    display: block;
+                    filter: drop-shadow(0 6px 16px rgba(184, 115, 51, 0.35));
+                }
+                #vapor-age-gate h2 {
+                    font-size: 1.35rem;
+                    font-weight: 800;
+                    letter-spacing: 0.02em;
+                    text-align: center;
+                    margin: 0 0 0.65rem;
+                    color: #f8fafc;
+                }
+                #vapor-age-gate p.vapor-age-gate__lead {
+                    font-size: 0.95rem;
+                    line-height: 1.55;
+                    color: #c6d0ea;
+                    text-align: center;
+                    margin: 0 0 1.25rem;
+                }
+                #vapor-age-gate .vapor-age-gate__actions {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.65rem;
+                }
+                #vapor-age-gate .vapor-age-gate__btn {
+                    display: block;
+                    width: 100%;
+                    padding: 0.85rem 1rem;
+                    border-radius: 12px;
+                    font-size: 0.95rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                    border: none;
+                    transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+                }
+                #vapor-age-gate .vapor-age-gate__btn--yes {
+                    background: linear-gradient(135deg, #b87333, #d4a574);
+                    color: #0f0d0a;
+                    box-shadow: 0 10px 28px rgba(184, 115, 51, 0.35);
+                }
+                #vapor-age-gate .vapor-age-gate__btn--yes:hover {
+                    filter: brightness(1.06);
+                    transform: translateY(-1px);
+                }
+                #vapor-age-gate .vapor-age-gate__btn--no {
+                    background: rgba(255, 255, 255, 0.06);
+                    color: #cbd5f5;
+                    border: 1px solid rgba(255, 255, 255, 0.14);
+                }
+                #vapor-age-gate .vapor-age-gate__btn--no:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                }
+                #vapor-age-gate p.vapor-age-gate__legal {
+                    font-size: 0.72rem;
+                    line-height: 1.45;
+                    color: #8b95b3;
+                    text-align: center;
+                    margin: 1rem 0 0;
+                }
+                body.vapor-age-gate-open {
+                    overflow: hidden !important;
+                }
+            `;
+            document.head.appendChild(style);
+
+            const root = document.createElement('div');
+            root.id = 'vapor-age-gate';
+            root.setAttribute('role', 'dialog');
+            root.setAttribute('aria-modal', 'true');
+            root.setAttribute('aria-labelledby', 'vapor-age-title');
+            root.innerHTML = `
+                <div class="vapor-age-gate__backdrop" aria-hidden="true"></div>
+                <div class="vapor-age-gate__card">
+                    <img class="vapor-age-gate__logo" src="resources/logo.png" alt="" width="52" height="52" decoding="async">
+                    <h2 id="vapor-age-title">Age verification</h2>
+                    <p class="vapor-age-gate__lead">This site offers nicotine vaping products. You must be <strong>18 years of age or older</strong> (or the legal age in your area) to continue.</p>
+                    <div class="vapor-age-gate__actions">
+                        <button type="button" class="vapor-age-gate__btn vapor-age-gate__btn--yes" id="vapor-age-yes">I am 18 or older — Enter site</button>
+                        <button type="button" class="vapor-age-gate__btn vapor-age-gate__btn--no" id="vapor-age-no">I am under 18 — Leave</button>
+                    </div>
+                    <p class="vapor-age-gate__legal">Nicotine is addictive. Products are for adults only. By entering you confirm that you meet the legal age and accept responsibility to comply with local laws.</p>
+                </div>
+            `;
+            document.body.appendChild(root);
+            document.body.classList.add('vapor-age-gate-open');
+
+            const closeGate = () => {
+                root.remove();
+                style.remove();
+                document.body.classList.remove('vapor-age-gate-open');
+            };
+
+            const yes = root.querySelector('#vapor-age-yes');
+            const no = root.querySelector('#vapor-age-no');
+            if (yes) {
+                yes.addEventListener('click', () => {
+                    try {
+                        localStorage.setItem(AGE_STORAGE_KEY, '1');
+                    } catch {
+                        /* ignore */
+                    }
+                    closeGate();
+                });
+            }
+            if (no) {
+                no.addEventListener('click', () => {
+                    window.location.href = 'https://www.google.com';
+                });
+            }
+
+            const focusable = yes || root;
+            if (focusable && typeof focusable.focus === 'function') {
+                setTimeout(() => focusable.focus(), 50);
+            }
+
+            root.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    if (no) no.click();
+                }
+            });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', run, { once: true });
+        } else {
+            run();
+        }
+    }
+
     return {
         applyFuturisticTheme,
         getCart,
@@ -1057,6 +1239,11 @@ window.VaporShared = (() => {
         animateStagger,
         setupScrollAnimations,
         setupHoverAnimations,
-        setupJellyAnimations
+        setupJellyAnimations,
+        setupAgeVerification
     };
 })();
+
+if (window.VaporShared && typeof window.VaporShared.setupAgeVerification === 'function') {
+    window.VaporShared.setupAgeVerification();
+}
