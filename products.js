@@ -10,6 +10,151 @@ const productsState = {
     comparison: []
 };
 
+function escapeHtml(text) {
+    const d = document.createElement('div');
+    d.textContent = text == null ? '' : String(text);
+    return d.innerHTML;
+}
+
+function labelForCategoryInput(value) {
+    const input = document.querySelector(`input.category-filter[value="${CSS.escape(value)}"]`);
+    const span = input?.closest('label')?.querySelector('span');
+    return span ? span.textContent.trim() : value;
+}
+
+function labelForBrandInput(value) {
+    const input = document.querySelector(`input.brand-filter[value="${CSS.escape(value)}"]`);
+    const span = input?.closest('label')?.querySelector('span');
+    return span ? span.textContent.trim() : value;
+}
+
+function labelForNicotineInput(value) {
+    const input = document.querySelector(`input.nicotine-filter[value="${CSS.escape(value)}"]`);
+    const span = input?.closest('label')?.querySelector('span');
+    return span ? span.textContent.trim() : value;
+}
+
+function hasActiveFilters() {
+    const f = productsState.filters;
+    return (
+        f.categories.length > 0 ||
+        f.brands.length > 0 ||
+        f.nicotine.length > 0 ||
+        Boolean(f.search && f.search.trim()) ||
+        f.priceMax < 100
+    );
+}
+
+function syncUrlFromFilters() {
+    const params = new URLSearchParams();
+    if (productsState.filters.categories.length === 1) {
+        params.set('category', productsState.filters.categories[0]);
+    }
+    if (productsState.filters.search && productsState.filters.search.trim()) {
+        params.set('q', productsState.filters.search.trim());
+    }
+    const qs = params.toString();
+    const base = window.location.pathname;
+    const newUrl = qs ? `${base}?${qs}` : base;
+    history.replaceState(null, '', newUrl);
+}
+
+function removeFilterChip(type, rawValue, products, cart, shared) {
+    const value = rawValue;
+    if (type === 'category') {
+        productsState.filters.categories = productsState.filters.categories.filter((v) => v !== value);
+        const cb = document.querySelector(`input.category-filter[value="${CSS.escape(value)}"]`);
+        if (cb) cb.checked = false;
+    } else if (type === 'brand') {
+        productsState.filters.brands = productsState.filters.brands.filter((v) => v !== value);
+        const cb = document.querySelector(`input.brand-filter[value="${CSS.escape(value)}"]`);
+        if (cb) cb.checked = false;
+    } else if (type === 'nicotine') {
+        productsState.filters.nicotine = productsState.filters.nicotine.filter((v) => v !== value);
+        const cb = document.querySelector(`input.nicotine-filter[value="${CSS.escape(value)}"]`);
+        if (cb) cb.checked = false;
+    } else if (type === 'search') {
+        productsState.filters.search = '';
+        document.querySelectorAll('#search-input, #search-input-mobile').forEach((input) => {
+            input.value = '';
+        });
+    } else if (type === 'price') {
+        productsState.filters.priceMax = 100;
+        const range = document.getElementById('price-range');
+        if (range) range.value = '100';
+        const view = document.getElementById('price-value');
+        if (view) view.textContent = '$100+';
+    }
+    renderProducts(products, cart, shared);
+}
+
+function clearAllFilters(products, cart, shared) {
+    document.querySelectorAll('.category-filter, .brand-filter, .nicotine-filter').forEach((cb) => {
+        cb.checked = false;
+    });
+    productsState.filters = { categories: [], brands: [], nicotine: [], priceMax: 100, search: '' };
+    document.querySelectorAll('#search-input, #search-input-mobile').forEach((input) => {
+        input.value = '';
+    });
+    const range = document.getElementById('price-range');
+    if (range) {
+        range.value = '100';
+        const view = document.getElementById('price-value');
+        if (view) view.textContent = '$100+';
+    }
+    renderProducts(products, cart, shared);
+}
+
+function updateActiveFiltersUI() {
+    const host = document.getElementById('active-filters');
+    const banner = document.getElementById('filter-from-chat-banner');
+    if (!host) return;
+
+    const chips = [];
+    const f = productsState.filters;
+
+    f.categories.forEach((v) => {
+        const label = `Category: ${labelForCategoryInput(v)}`;
+        chips.push({ type: 'category', value: v, label });
+    });
+    f.brands.forEach((v) => {
+        const label = `Brand: ${labelForBrandInput(v)}`;
+        chips.push({ type: 'brand', value: v, label });
+    });
+    f.nicotine.forEach((v) => {
+        const label = `Nicotine: ${labelForNicotineInput(v)}`;
+        chips.push({ type: 'nicotine', value: v, label });
+    });
+    if (f.search && f.search.trim()) {
+        const q = f.search.trim();
+        chips.push({ type: 'search', value: q, label: `Search: “${q}”` });
+    }
+    if (f.priceMax < 100) {
+        chips.push({ type: 'price', value: String(f.priceMax), label: `Max price: $${f.priceMax}` });
+    }
+
+    if (!chips.length) {
+        host.innerHTML = '';
+        host.classList.add('hidden');
+        if (banner) banner.classList.add('hidden');
+        return;
+    }
+
+    host.classList.remove('hidden');
+    if (banner) banner.classList.remove('hidden');
+
+    host.innerHTML = chips
+        .map((c) => {
+            const encVal =
+                c.type === 'search' ? encodeURIComponent(c.value) : encodeURIComponent(String(c.value));
+            return `<span class="filter-chip" role="listitem">
+  ${escapeHtml(c.label)}
+  <button type="button" class="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-white/90 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/60" aria-label="Remove filter" data-filter-type="${escapeHtml(c.type)}" data-filter-value="${encVal}">×</button>
+</span>`;
+        })
+        .join('');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const products = window.VAPOR_PRODUCTS || [];
     const shared = window.VaporShared;
@@ -89,15 +234,29 @@ function setupControls(products, cart, shared) {
 
     const clearBtn = document.getElementById('clear-filters');
     if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
-            document.querySelectorAll('.category-filter, .brand-filter, .nicotine-filter').forEach((cb) => {
-                cb.checked = false;
-            });
-            productsState.filters = { categories: [], brands: [], nicotine: [], priceMax: 100, search: '' };
-            if (range) range.value = 100;
-            const view = document.getElementById('price-value');
-            if (view) view.textContent = '$100+';
-            renderProducts(products, cart, shared);
+        clearBtn.addEventListener('click', () => clearAllFilters(products, cart, shared));
+    }
+
+    const showAllBtn = document.getElementById('show-all-products-btn');
+    if (showAllBtn) {
+        showAllBtn.addEventListener('click', () => clearAllFilters(products, cart, shared));
+    }
+
+    const activeHost = document.getElementById('active-filters');
+    if (activeHost) {
+        activeHost.addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-filter-type]');
+            if (!btn) return;
+            e.preventDefault();
+            const type = btn.getAttribute('data-filter-type');
+            const raw = btn.getAttribute('data-filter-value') || '';
+            let decoded = raw;
+            try {
+                decoded = decodeURIComponent(raw);
+            } catch {
+                decoded = raw;
+            }
+            removeFilterChip(type, decoded, products, cart, shared);
         });
     }
 
@@ -226,6 +385,9 @@ function renderProducts(products, cart, shared) {
     shared.setupHoverAnimations(grid);
     shared.setupScrollAnimations(grid);
     shared.setupJellyAnimations(grid);
+
+    updateActiveFiltersUI();
+    syncUrlFromFilters();
 }
 
 function openQuickView(product, cart, shared) {

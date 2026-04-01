@@ -248,8 +248,8 @@
                         </div>
 
                         <!-- Active Filters -->
-                        <div id="active-filters" class="mb-6">
-                            <!-- Active filter chips will appear here -->
+                        <div id="active-filters" class="mb-6 hidden flex flex-wrap gap-2 items-center min-h-0" aria-live="polite">
+                            <!-- Filled by products.js when filters apply (e.g. from chat links) -->
                         </div>
 
                         <!-- Category Filter -->
@@ -374,7 +374,27 @@
                 </div>
 
                 <!-- Products Grid -->
-                <div class="lg:w-3/4">
+                <div class="lg:w-3/4 min-w-0">
+                    <div
+                        id="filter-from-chat-banner"
+                        class="mb-4 hidden rounded-xl border border-amber-200/90 bg-gradient-to-br from-amber-50 via-white to-amber-50/50 px-4 py-3 shadow-sm"
+                        role="region"
+                        aria-label="Active filters notice"
+                    >
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <p class="text-sm text-amber-950 leading-snug">
+                                <span class="font-semibold">Filtered list</span>
+                                <span class="text-amber-900/90"> — products are narrowed by category, search, or sidebar filters. Clear below or in the sidebar to see everything.</span>
+                            </p>
+                            <button
+                                type="button"
+                                id="show-all-products-btn"
+                                class="shrink-0 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+                            >
+                                Show all products
+                            </button>
+                        </div>
+                    </div>
                     <!-- Sort and View Options -->
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3 sm:gap-4">
                         <div class="flex items-center gap-2 sm:gap-4 flex-wrap">
@@ -484,6 +504,7 @@
     </footer>
 
     <script src="data.js?v=vozol20260331"></script>
-    <script src="products.js?v=vozol20260331"></script>
+    <script src="products.js?v=20260402"></script>
+    <script src="vapor-chatbot.js?v=20260401e"></script>
 </body>
 </html>

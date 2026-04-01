@@ -36,24 +36,24 @@ function renderCart(cart, shared) {
     cartContent.innerHTML = '';
     cart.items.forEach((item) => {
         const wrap = document.createElement('div');
-        wrap.className = 'cart-item p-4 rounded-lg bg-white';
+        wrap.className = 'cart-item p-3 sm:p-4 rounded-lg bg-white overflow-hidden max-w-full';
         wrap.innerHTML = `
-            <div class="flex items-start gap-3 sm:gap-4">
-                <img class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg" src="${item.image}" alt="${item.name}">
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-start justify-between gap-2">
-                        <div class="min-w-0">
-                            <h3 class="font-semibold text-base sm:text-lg mb-1 truncate" style="color: var(--primary);">${item.name}</h3>
-                            <p class="text-sm text-gray-600 mb-2">${item.brand}</p>
+            <div class="flex items-start gap-2 sm:gap-4 min-w-0">
+                <img class="w-14 h-14 sm:w-20 sm:h-20 object-cover rounded-lg shrink-0" src="${item.image}" alt="" width="80" height="80" loading="lazy">
+                <div class="flex-1 min-w-0 overflow-hidden">
+                    <div class="flex items-start justify-between gap-2 sm:gap-3 min-w-0">
+                        <div class="min-w-0 flex-1">
+                            <h3 class="font-semibold text-[0.95rem] sm:text-lg mb-1 break-words" style="color: var(--primary);">${item.name}</h3>
+                            <p class="text-xs sm:text-sm text-gray-600 mb-0 sm:mb-2 break-words">${item.brand}</p>
                         </div>
-                        <div class="font-bold text-base sm:text-lg whitespace-nowrap" style="color: var(--secondary);">$${(item.price * item.quantity).toFixed(2)}</div>
+                        <div class="font-bold text-sm sm:text-lg whitespace-nowrap shrink-0 tabular-nums text-right pl-1" style="color: var(--secondary);">$${(item.price * item.quantity).toFixed(2)}</div>
                     </div>
 
                     <div class="mt-2 flex items-center gap-2 flex-wrap">
-                        <button class="quantity-btn decrease-btn" aria-label="Decrease quantity">-</button>
+                        <button type="button" class="quantity-btn decrease-btn" aria-label="Decrease quantity">-</button>
                         <input type="number" class="quantity-input" min="1" max="10" value="${item.quantity}" aria-label="Quantity">
-                        <button class="quantity-btn increase-btn" aria-label="Increase quantity">+</button>
-                        <button class="remove-item text-red-500 hover:text-red-700 text-sm ml-1 sm:ml-3">Remove</button>
+                        <button type="button" class="quantity-btn increase-btn" aria-label="Increase quantity">+</button>
+                        <button type="button" class="remove-item text-red-500 hover:text-red-700 text-xs sm:text-sm ml-auto sm:ml-3">Remove</button>
                     </div>
                 </div>
             </div>
@@ -279,15 +279,15 @@ function renderRecommended(products, cart, shared) {
     container.innerHTML = '';
     products.filter((p) => p.popular).slice(0, 4).forEach((product) => {
         const card = document.createElement('div');
-        card.className = 'product-card bg-white rounded-lg overflow-hidden shadow-lg';
+        card.className = 'product-card bg-white rounded-lg overflow-hidden shadow-lg min-w-0 max-w-full';
         card.innerHTML = `
-            <img src="${product.image}" alt="${product.name}" class="w-full h-40 object-cover">
-            <div class="p-4">
-                <h3 class="font-semibold text-base mb-1">${product.name}</h3>
-                <p class="text-sm text-gray-600 mb-3">${product.brand}</p>
-                <div class="flex items-center justify-between">
-                    <span class="font-bold" style="color: var(--secondary);">$${product.price.toFixed(2)}</span>
-                    <button class="btn-primary text-white text-sm px-3 py-1 rounded">Add</button>
+            <img src="${product.image}" alt="" class="w-full h-36 sm:h-40 object-cover" loading="lazy" width="400" height="160">
+            <div class="p-3 sm:p-4 min-w-0">
+                <h3 class="font-semibold text-sm sm:text-base mb-1 break-words">${product.name}</h3>
+                <p class="text-xs sm:text-sm text-gray-600 mb-3 break-words">${product.brand}</p>
+                <div class="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between min-w-0">
+                    <span class="font-bold tabular-nums text-center sm:text-left" style="color: var(--secondary);">$${product.price.toFixed(2)}</span>
+                    <button type="button" class="btn-primary text-white text-sm px-3 py-2 rounded w-full sm:w-auto shrink-0">Add</button>
                 </div>
             </div>
         `;
