@@ -1042,7 +1042,7 @@ window.VaporShared = (() => {
         });
     }
 
-    const AGE_STORAGE_KEY = 'vapor_age_verified_v1';
+    const AGE_STORAGE_KEY = 'vapor_age_verified_v2_21';
 
     function setupAgeVerification() {
         let verified = false;
@@ -1169,10 +1169,10 @@ window.VaporShared = (() => {
                 <div class="vapor-age-gate__card">
                     <img class="vapor-age-gate__logo" src="resources/logo.png" alt="" width="52" height="52" decoding="async">
                     <h2 id="vapor-age-title">Age verification</h2>
-                    <p class="vapor-age-gate__lead">This site offers nicotine vaping products. You must be <strong>18 years of age or older</strong> (or the legal age in your area) to continue.</p>
+                    <p class="vapor-age-gate__lead">This site offers nicotine vaping products. You must be <strong>21 years of age or older</strong> (or the legal age in your area) to continue.</p>
                     <div class="vapor-age-gate__actions">
-                        <button type="button" class="vapor-age-gate__btn vapor-age-gate__btn--yes" id="vapor-age-yes">I am 18 or older — Enter site</button>
-                        <button type="button" class="vapor-age-gate__btn vapor-age-gate__btn--no" id="vapor-age-no">I am under 18 — Leave</button>
+                        <button type="button" class="vapor-age-gate__btn vapor-age-gate__btn--yes" id="vapor-age-yes">I am 21 or older — Enter site</button>
+                        <button type="button" class="vapor-age-gate__btn vapor-age-gate__btn--no" id="vapor-age-no">I am under 21 — Leave</button>
                     </div>
                     <p class="vapor-age-gate__legal">Nicotine is addictive. Products are for adults only. By entering you confirm that you meet the legal age and accept responsibility to comply with local laws.</p>
                 </div>
