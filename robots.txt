@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /cart.html
+Disallow: /cart
+
+Sitemap: https://v4por.netlify.app/sitemap.xml
