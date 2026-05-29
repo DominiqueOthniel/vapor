@@ -1,18 +1,29 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initProductPage() {
     const shared = window.VaporShared;
     const products = window.VAPOR_PRODUCTS || [];
-    if (!shared) return;
-
-    const params = new URLSearchParams(window.location.search);
-    const slug = params.get('slug');
-    const product = shared.findProductBySlug(products, slug);
     const root = document.getElementById('product-detail');
+
+    if (!root) return;
+
+    if (!shared) {
+        root.innerHTML = `
+            <div class="rounded-2xl bg-white p-8 sm:p-12 shadow-sm border border-gray-100 text-center">
+                <h1 class="text-2xl font-bold mb-4" style="color: var(--primary);">Unable to load product</h1>
+                <p class="text-gray-600 mb-6">Please refresh the page or try again later.</p>
+                <a href="products.html" class="btn-primary inline-block text-white px-6 py-3 rounded-lg font-semibold">Browse all products</a>
+            </div>
+        `;
+        return;
+    }
+
+    const slug = shared.getSlugFromUrl();
+    const product = shared.findProductBySlug(products, slug);
     const cart = shared.getCart();
     shared.updateCartNavUI(cart);
     shared.setupCartDropdown();
     shared.setupMobileNav();
 
-    if (!slug || !product || !root) {
+    if (!slug || !product) {
         renderNotFound(root);
         document.title = 'Product Not Found - VAPOR';
         return;
@@ -20,7 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     shared.updateProductPageSeo(product);
     renderProduct(product, root, cart, shared);
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProductPage, { once: true });
+} else {
+    initProductPage();
+}
 
 function renderNotFound(root) {
     root.innerHTML = `

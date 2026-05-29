@@ -1264,6 +1264,17 @@ window.VaporShared = (() => {
         );
     }
 
+    function getSlugFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const querySlug = params.get('slug');
+        if (querySlug) return decodeURIComponent(querySlug);
+
+        const pathMatch = window.location.pathname.match(/\/product\/([^/]+)\/?$/i);
+        if (pathMatch) return decodeURIComponent(pathMatch[1]);
+
+        return null;
+    }
+
     function setMetaContent(selector, content) {
         const el = document.querySelector(selector);
         if (el) el.setAttribute('content', content);
@@ -1346,6 +1357,7 @@ window.VaporShared = (() => {
         getProductCanonicalUrl,
         getAbsoluteAssetUrl,
         findProductBySlug,
+        getSlugFromUrl,
         updateProductPageSeo
     };
 })();
