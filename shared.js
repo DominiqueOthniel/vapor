@@ -1224,7 +1224,106 @@ window.VaporShared = (() => {
         }
     }
 
+    const SITE_URL = 'https://v4por.netlify.app';
+
+    function slugifyProductName(name) {
+        return String(name || '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
+    function getProductSlug(product) {
+        if (!product) return '';
+        if (product.slug) return product.slug;
+        return `${slugifyProductName(product.name)}-${product.id}`;
+    }
+
+    function getProductUrl(product) {
+        return `/product/${encodeURIComponent(getProductSlug(product))}`;
+    }
+
+    function getProductCanonicalUrl(product) {
+        return `${SITE_URL}${getProductUrl(product)}`;
+    }
+
+    function getAbsoluteAssetUrl(path) {
+        if (!path) return `${SITE_URL}/resources/logo.png`;
+        if (/^https?:\/\//i.test(path)) return path;
+        return `${SITE_URL}/${String(path).replace(/^\//, '')}`;
+    }
+
+    function findProductBySlug(products, slug) {
+        if (!slug || !Array.isArray(products)) return null;
+        const decoded = decodeURIComponent(slug);
+        return (
+            products.find((product) => getProductSlug(product) === decoded) ||
+            products.find((product) => String(product.id) === decoded)
+        );
+    }
+
+    function setMetaContent(selector, content) {
+        const el = document.querySelector(selector);
+        if (el) el.setAttribute('content', content);
+    }
+
+    function updateProductPageSeo(product) {
+        const title = `${product.name} - VAPOR`;
+        const description =
+            product.description ||
+            `Buy ${product.name} from ${product.brand || 'VAPOR'} at VAPOR premium vape store.`;
+        const canonical = getProductCanonicalUrl(product);
+        const image = getAbsoluteAssetUrl(product.image);
+
+        document.title = title;
+        setMetaContent('meta[name="description"]', description);
+        setMetaContent('meta[name="robots"]', 'index, follow');
+        setMetaContent('meta[property="og:title"]', title);
+        setMetaContent('meta[property="og:description"]', description);
+        setMetaContent('meta[property="og:url"]', canonical);
+        setMetaContent('meta[property="og:image"]', image);
+        setMetaContent('meta[property="og:type"]', 'product');
+        setMetaContent('meta[name="twitter:title"]', title);
+        setMetaContent('meta[name="twitter:description"]', description);
+        setMetaContent('meta[name="twitter:image"]', image);
+
+        const canonicalEl = document.querySelector('link[rel="canonical"]');
+        if (canonicalEl) canonicalEl.setAttribute('href', canonical);
+
+        let jsonLd = document.getElementById('product-jsonld');
+        if (!jsonLd) {
+            jsonLd = document.createElement('script');
+            jsonLd.type = 'application/ld+json';
+            jsonLd.id = 'product-jsonld';
+            document.head.appendChild(jsonLd);
+        }
+
+        jsonLd.textContent = JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: product.name,
+            description: product.description,
+            image: [image],
+            brand: {
+                '@type': 'Brand',
+                name: product.brand || 'VAPOR'
+            },
+            offers: {
+                '@type': 'Offer',
+                url: canonical,
+                priceCurrency: 'USD',
+                price: product.price,
+                availability: product.inStock
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock'
+            }
+        });
+    }
+
     return {
+        SITE_URL,
         applyFuturisticTheme,
         getCart,
         saveCart,
@@ -1240,7 +1339,14 @@ window.VaporShared = (() => {
         setupScrollAnimations,
         setupHoverAnimations,
         setupJellyAnimations,
-        setupAgeVerification
+        setupAgeVerification,
+        slugifyProductName,
+        getProductSlug,
+        getProductUrl,
+        getProductCanonicalUrl,
+        getAbsoluteAssetUrl,
+        findProductBySlug,
+        updateProductPageSeo
     };
 })();
 

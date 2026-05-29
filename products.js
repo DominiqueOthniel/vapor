@@ -330,6 +330,7 @@ function renderProducts(products, cart, shared) {
     const filtered = sortProducts(applyFilters(products));
     grid.innerHTML = '';
     filtered.forEach((product) => {
+        const productUrl = shared.getProductUrl(product);
         // Full-bleed thumb: cover + focal point slightly above center (typical packshots)
         const imageClass = 'absolute inset-0 h-full w-full object-cover object-[center_32%]';
 
@@ -337,12 +338,16 @@ function renderProducts(products, cart, shared) {
         card.className = 'product-card bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 min-w-0 max-w-full flex flex-col h-full';
         card.innerHTML = `
             <div class="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-gray-100">
-                <img src="${product.image}" alt="${product.name}" class="${imageClass}" loading="lazy" decoding="async">
-                ${product.new ? '<span class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">New</span>' : ''}
+                <a href="${productUrl}" class="block h-full w-full">
+                    <img src="${product.image}" alt="${product.name}" class="${imageClass}" loading="lazy" decoding="async">
+                </a>
+                ${product.new ? '<span class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full pointer-events-none">New</span>' : ''}
                 <button type="button" class="compare-btn absolute top-2 right-2 bg-white/90 p-2 rounded-full shadow-md hover:bg-white transition-colors shrink-0" aria-label="Add to compare">+</button>
             </div>
             <div class="p-3 sm:p-4 min-w-0 flex flex-col flex-1">
-                <h3 class="font-semibold text-base sm:text-lg text-gray-900 line-clamp-2 break-words min-w-0">${product.name}</h3>
+                <h3 class="font-semibold text-base sm:text-lg text-gray-900 line-clamp-2 break-words min-w-0">
+                    <a href="${productUrl}" class="hover:underline">${product.name}</a>
+                </h3>
                 <p class="text-gray-600 text-sm mb-2 truncate min-w-0">${product.brand}</p>
                 <p class="text-gray-700 text-sm mb-3 line-clamp-2 min-w-0 break-words">${product.description}</p>
                 <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 mb-4 min-w-0">
@@ -350,9 +355,9 @@ function renderProducts(products, cart, shared) {
                     ${product.puffs ? `<span class="text-xs sm:text-sm text-gray-500 whitespace-nowrap">${product.puffs} puffs</span>` : ''}
                 </div>
                 <div class="flex flex-col sm:flex-row gap-2 mt-auto min-w-0">
-                    <button type="button" class="quick-view-btn w-full sm:flex-1 min-w-0 bg-gray-100 text-gray-700 py-2.5 px-3 sm:px-4 rounded-lg hover:bg-gray-200 transition-colors text-sm text-center">
+                    <a href="${productUrl}" class="quick-view-btn w-full sm:flex-1 min-w-0 bg-gray-100 text-gray-700 py-2.5 px-3 sm:px-4 rounded-lg hover:bg-gray-200 transition-colors text-sm text-center">
                         View Details
-                    </button>
+                    </a>
                     <button type="button" class="add-btn w-full sm:flex-1 min-w-0 btn-primary text-white py-2.5 px-3 sm:px-4 rounded-lg text-sm text-center ${product.inStock ? '' : 'opacity-60 cursor-not-allowed'}" ${product.inStock ? '' : 'disabled'}>
                         ${product.inStock ? 'Add to Cart' : 'Out of Stock'}
                     </button>
@@ -371,11 +376,11 @@ function renderProducts(products, cart, shared) {
 
         const compareBtn = card.querySelector('.compare-btn');
         if (compareBtn) {
-            compareBtn.addEventListener('click', () => toggleComparison(product, shared));
-        }
-        const quickViewBtn = card.querySelector('.quick-view-btn');
-        if (quickViewBtn) {
-            quickViewBtn.addEventListener('click', () => openQuickView(product, cart, shared));
+            compareBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                toggleComparison(product, shared);
+            });
         }
         grid.appendChild(card);
     });

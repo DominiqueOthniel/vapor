@@ -26,6 +26,11 @@
   to = "/about.html"
   status = 301
 
+[[redirects]]
+  from = "/product/:slug"
+  to = "/product.html?slug=:slug"
+  status = 200
+
 [[headers]]
   for = "/robots.txt"
   [headers.values]

@@ -60,18 +60,21 @@ function renderFeatured(products, cart, shared) {
 }
 
 function createCard(product, cart, shared) {
+    const productUrl = shared.getProductUrl(product);
     const card = document.createElement('div');
     card.className = 'product-card snap-start shrink-0 bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300';
     card.style.flex = '0 0 300px';
     card.style.width = '300px';
     card.innerHTML = `
-        <div class="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
+        <a href="${productUrl}" class="relative block aspect-[4/3] w-full overflow-hidden bg-gray-100">
             <img src="${product.image}" alt="${product.name}" class="absolute inset-0 h-full w-full object-cover object-[center_32%]" loading="lazy" decoding="async">
             ${product.new ? '<span class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">New</span>' : ''}
-        </div>
+        </a>
         <div class="p-4 min-w-0">
             <div class="flex justify-between items-start mb-2 gap-2 min-w-0">
-                <h3 class="font-semibold text-base text-gray-900 line-clamp-2 min-w-0 flex-1 break-words">${product.name}</h3>
+                <h3 class="font-semibold text-base text-gray-900 line-clamp-2 min-w-0 flex-1 break-words">
+                    <a href="${productUrl}" class="hover:underline">${product.name}</a>
+                </h3>
                 <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full shrink-0">In Stock</span>
             </div>
             <p class="text-gray-600 text-sm mb-2 truncate">${product.brand}</p>
@@ -81,7 +84,7 @@ function createCard(product, cart, shared) {
                 ${product.originalPrice ? `<span class="text-gray-400 line-through text-sm">$${product.originalPrice.toFixed(2)}</span>` : ''}
             </div>
             <div class="flex flex-col sm:flex-row gap-2 min-w-0">
-                <button type="button" class="quick-view-btn w-full sm:flex-1 min-w-0 bg-gray-100 text-gray-700 py-2 px-3 text-sm rounded-lg hover:bg-gray-200 transition-colors">Quick View</button>
+                <a href="${productUrl}" class="w-full sm:flex-1 min-w-0 bg-gray-100 text-gray-700 py-2 px-3 text-sm rounded-lg hover:bg-gray-200 transition-colors text-center">View Details</a>
                 <button type="button" class="add-to-cart-btn w-full sm:flex-1 min-w-0 btn-primary text-white py-2 px-3 text-sm rounded-lg">Add to Cart</button>
             </div>
         </div>
@@ -90,10 +93,6 @@ function createCard(product, cart, shared) {
     card.querySelector('.add-to-cart-btn').addEventListener('click', () => {
         shared.addToCart(cart, product, 1);
         shared.showNotification(`${product.name} added to cart!`, 'success');
-    });
-
-    card.querySelector('.quick-view-btn').addEventListener('click', () => {
-        openQuickView(product, cart, shared);
     });
 
     return card;
